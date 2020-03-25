@@ -10,6 +10,11 @@ const source = fromEvent($("#app .btn"), "click");
 
 // stream
 source.subscribe(e => {
+  const unit =
+    $("#app input[type='radio']:checked").val() === "option1"
+      ? "metric"
+      : "imperial";
+
   //resets+clear
   $("#temp")
     .css("top", "0vh")
@@ -19,16 +24,16 @@ source.subscribe(e => {
     .css("bottom", "0vh")
     .css("opacity", "0");
 
-  let wCondition = "";
+  let wCondition = { code: "", bc: "" };
 
   e.preventDefault();
   const city = $("#city").val();
 
   $.ajax(
-    `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&APPID=d98e7b2d37fbd7b63a3ae50925548d3f`
+    `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=${unit}&APPID=d98e7b2d37fbd7b63a3ae50925548d3f`
   ).done(res => {
     $("#temp")
-      .html(`<h1 class="font-weight-lighter">${temp(res)}c</h1>`)
+      .html(`<h1 class="font-weight-lighter">${temp(res)}°</h1>`)
       .animate(
         {
           top: "20vh",
@@ -39,31 +44,38 @@ source.subscribe(e => {
     //get weather icon
     switch (condition(res)) {
       case "Clouds":
-        wCondition = "hc";
+        wCondition.code = "hc";
+        wCondition.bc = "#FF99CC";
         break;
       case "Clear":
-        wCondition = "c";
+        wCondition.code = "c";
+        wCondition.bc = "#CCFFFF";
         break;
       case "Snow":
-        wCondition = "sn";
+        wCondition.code = "sn";
+        wCondition.bc = "#6699FF";
         break;
       case "Rain":
-        wCondition = "lr";
+        wCondition.code = "lr";
+        wCondition.bc = "#CCFF99";
         break;
       case "Drizzle":
-        wCondition = "s";
+        wCondition.code = "s";
+        wCondition.bc = "#FF99CC";
         break;
       case "Thunderstorm":
-        wCondition = "t";
+        wCondition.code = "t";
+        wCondition.bc = "#FF99CC";
         break;
       default:
-        wCondition = "lc";
+        wCondition.code = "lc";
+        wCondition.bc = "#FF99CC";
     }
 
     $("#cond")
       .attr(
         "src",
-        `https://www.metaweather.com/static/img/weather/${wCondition}.svg`
+        `https://www.metaweather.com/static/img/weather/${wCondition.code}.svg`
       )
       .animate(
         {
@@ -72,5 +84,9 @@ source.subscribe(e => {
         },
         1000
       );
+
+    $(".right-tab").css({
+      "background-color": wCondition.bc
+    });
   });
 });
