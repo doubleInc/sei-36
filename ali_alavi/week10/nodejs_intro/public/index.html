@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script
+      src="https://code.jquery.com/jquery-2.2.4.min.js"
+      integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <h1>See a book Cover!</h1>
+
+    <form action="">
+      <input type="text" id="title" name="booktitle" /><br /><br />
+      <input type="submit" id="submitbook" value="Submit" />
+    </form>
+    <div id="res"></div>
+  </body>
+  <script>
+    const Each = function (arr, fn) {
+      return arr.forEach(fn);
+    };
+
+    $("#submitbook").click(function (e) {
+      $("#res").html("");
+
+      let gBooksUrl = `https://www.googleapis.com/books/v1/volumes?q=title:${$(
+        "#title"
+      ).val()}`;
+
+      e.preventDefault();
+      console.log($("#title").val());
+
+      $.ajax(gBooksUrl).then((res) => {
+        const books = res.items;
+        //$("#app").html(JSON.stringify(books[0].volumeInfo.imageLinks.thumbnail));
+        console.log(res.items[0].volumeInfo.imageLinks.thumbnail);
+
+        Each(books, (x) =>
+          $("#res").append(
+            `<img src="${x.volumeInfo.imageLinks.thumbnail}"></img>`
+          )
+        );
+      });
+    });
+  </script>
+</html>
